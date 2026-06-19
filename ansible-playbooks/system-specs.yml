@@ -1,0 +1,21 @@
+---
+- name: Gather and display system facts report
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+    - name: Display OS version
+      ansible.builtin.debug:
+        msg: "Operating System: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+
+    - name: Display total memory
+      ansible.builtin.debug:
+        msg: "Total Memory: {{ ansible_facts['memtotal_mb'] }} MB"
+
+    - name: Display CPU count
+      ansible.builtin.debug:
+        msg: "CPU Count: {{ ansible_facts['processor_cores'] }} cores"
+
+    - name: Display IP address
+      ansible.builtin.debug:
+        msg: "Primary IP Address: {{ ansible_facts['default_ipv4']['address'] }}"

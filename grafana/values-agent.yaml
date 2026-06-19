@@ -1,0 +1,79 @@
+prometheus:
+  prometheusSpec:
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+    externalLabels:
+      cluster: attendee-staging
+    enableRemoteWriteReceiver: true
+    remoteWrite:
+      - url: "http://64.227.137.37:9090/api/v1/write"   # Replace with your prometheus remote server public IP  
+        name: "remote-write"
+
+prometheus-node-exporter:
+  enabled: true
+  service:
+    port: 9110
+    targetPort: 9110
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi
+
+prometheus-pushgateway:
+  enabled: true
+  service:
+    port: 9095
+    targetPort: 9095
+  resources:
+    requests:
+      cpu: 50m
+      memory: 50Mi
+    limits:
+      cpu: 100m
+      memory: 100Mi
+
+kube-state-metrics:
+  enabled: true
+  service:
+    ports:
+      - name: http-metrics
+        port: 8085
+        targetPort: 8085
+  resources:
+    requests:
+      cpu: 50m
+      memory: 200Mi
+    limits:
+      cpu: 100m
+      memory: 300Mi
+
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+  selector:
+    matchLabels:
+      app: attendee-prometheus-agent
+  endpoints:
+    - port: "web"
+      interval: 30s
+
+nodeSelector:
+  kubernetes.io/os: linux
+
+tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 200Mi
+  limits:
+    cpu: 200m
+    memory: 400Mi
+
